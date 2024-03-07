@@ -1263,7 +1263,7 @@ Voici une liste des validations par défaut et de leurs significations:
 | length  | target: { length: [1, 2] } | Précisez la taille du champ |
 | match  | target: { match: "keyToMatch" } | Vérifier que deux valeurs sont identiques |
 | username  | target: { username: true } | Précisez qu'un champ doit avoir un nom d'utilisateur valide (lettres, chiffres, point ou underscore). |
-| email  | target: { username: true } | Précisez qu'un champ doit être un email valide |
+| email  | target: { email: true } | Précisez qu'un champ doit être un email valide |
 | image  | target: { image: 1000000 } | Précisez qu'un champ doit être une image valide. 1000000 indique la taille maximale de l'image |
 | fileTypes  | target: { fileTypes: ['application/pdf', 'image/jpeg'] } | Précisez qu'un champ doit être un fichier valide entre les types préciser dans le tableau |
 | fileSize  | target: { fileSize: 1000000 } | Précisez la taille maximale d'un fichier en octet |
@@ -1273,3 +1273,122 @@ Voici une liste des validations par défaut et de leurs significations:
 | number  | target: { exists: true } | Précisez que la valeur d'un champ doit être un nombre valide |
 | date  | target: { date: "DD/MM/YYYY" } | Précisez que la valeur d'un champ doit être une date au format précisé |
 ### Upload des fichiers
+#### Introduction
+Comme c'est le cas pour la gestion des bases de données, il n'existe pas de fonctionnalité intégrée dans Express.js pour faciliter le téléchargement de fichiers. Pour accomplir cette tâche, il est souvent nécessaire de recourir à des bibliothèques tierces.
+
+Dans cette formation, nous allons explorer l'utilisation de la bibliothèque <a href="https://www.npmjs.com/package/express-fileupload">express-fileupload</a>, un middleware simple conçu spécifiquement pour simplifier le processus de téléchargement de fichiers dans des applications Express.js.
+
+Pour l'utiliser, commencez par l'installer en exécutant la commande suivante :
+```
+npm i express-fileupload
+```
+
+#### Configuration du middleware
+Une fois la bibliothèque installée, dans le fichier d'entrée de l'application, il est nécessaire de la configurer afin que les fichiers téléchargés soient accessibles dans la requête via l'objet `req.files`.
+
+```js
+// server.js
+// 1. importer express-fileupload
+const fileUpload = require("express-fileupload");
+
+// 2. Configuration de la bibliothèque sur l'application
+app.use(fileUpload());
+```
+> Assurez-vous d'importer ce middleware après les autres middlewares tels que `express.json()` et `express.urlencoded({ extended: true })`. En effet, les middlewares dans Express s'exécutent de manière séquentielle, l'un après l'autre. Vous pouvez consulter l'article sur le <a href="https://www.geeksforgeeks.org/middleware-in-express-js/">chaînage des middlewares</a> pour plus de détails.
+
+#### Upload classique
+Pour tester le téléchargement de fichiers, nous allons créer une route permettant d'enregistrer un fichier sur le disque dur.
+
+Dans le répertoire des routes, nous allons créer un nouveau fichier nommé `upload.routes.js`. À l'intérieur de ce fichier, une seule route en méthode POST sera définie pour l'envoi d'un fichier:
+```js
+const express = require("express")
+const upload_routes = express.Router("")
+const upload_controller = require("../controllers/upload.controller")
+
+upload_routes.post("/fichier", upload_controller.uploadFicher)
+
+module.exports = upload_routes
+```
+
+Dans le fichier d'entrée de l'application, nous allons enregistrer un nouveau middleware pour lesroutes `/upload `afin d'accéder à la route créée dans le fichier `upload.routes.js`.
+```js
+const express = require('express');
+const utilisateurs_routes = require('./routes/utilisateurs.routes');
+const app = express();
+const dotenv = require('dotenv');
+// 1. importation du fichier contenant les routes uploads
+const upload_routes = require('./routes/upload.routes');
+app.use(fileUpload());
+dotenv.config()
+
+const port = process.env.PORT;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(fileUpload());
+
+// Middleware spécifique à une route
+app.use('/', utilisateurs_routes)
+// 2. enregistrement du nouveau middleware pour les routes upload
+app.use('/upload', upload_routes)
+
+app.listen(port, () => {
+  console.log(`Serveur écoutant sur le port ${port}`);
+});
+```
+Dans le fichier `upload.controller.js`, voici le code complet permettant d'uploader le fichier dans le dossier public.
+```js
+const path = require("path")
+
+const uploadFicher = async (req, res) => {
+     try {
+          if (req.files) {
+               const fichier = req.files.fichier
+               const dossier = path.resolve('./') + path.sep + 'public' + path.sep
+               const nomFichier = fichier.name
+               const destination = dossier + nomFichier
+               await fichier.mv(destination)
+               res.status(200).json({
+                    message: "Votre fichier a été enregistré"
+               })
+          } else {
+               res.status(422).send("Aucun fichier envoyé")
+          }
+     } catch (error) {
+          console.log(error)
+          res.status(500).send("Erreur interne du serveur")
+     }
+}
+module.exports = {
+     uploadFicher
+}
+`
+```js
+const fichier = req.files.fichier
+```
+Ici, nous avons d'abord récupéré le fichier en utilisant la clé `fichier` (vous pouvez la nommer selon vos préférences).
+```js
+const dossier = path.resolve('./') + path.sep + 'public' + path.sep
+```
+Ensuite, sur cette ligne, nous avons spécifié le dossier de destination (dans notre cas, public). `path.resolve('./')` permet de préciser que nous débutons à la racine, et `path.sep` est un séparateur de dossier qui s'ajuste en fonction du système utilisé (par exemple, \ pour Windows et / pour Linux).
+> Assurez-vous que le dossier public est déjà créé à la racine de votre application. Si ce n'est pas le cas, vous devez le créer.
+> Le module <a href="https://nodejs.org/api/path.html">path</a>  est déjà installé avec Node.js. Il n'est pas nécessaire de l'installer.
+
+```js
+const nomFichier = fichier.name
+const destination = dossier + nomFichier
+```
+Pour ces deux lignes, nous avons récupéré le nom du fichier et concaténé le dossier de destination avec le nom du fichier afin d'obtenir le chemin final de destination du fichier.
+```js
+await fichier.mv(destination)
+```
+À la fin, nous avons déplacé notre fichier vers la destination précisée.
+<a href="https://github.com/richardgirges/express-fileupload#available-options">`mv`</a> (abréviation  de `move`) e est une fonction accessible sur le fichier téléchargé via express-fileupload.
+
+#### Tester l'envoi des fichiers
+Pour tester l'envoi des fichiers, nous allons également utiliser l'extension Thunder Client, comme illustré dans cette capture d'écran :
+![Tester l'envoi des fichiers](https://i.ibb.co/Mfh2pJW/Screenshot-2024-03-07-160629.png)
+
+1. Dans le corps de la requête, sélectionnez l'option indiquant que vous envoyez des données sous forme de formulaire (Form).
+2. Dans les champs de formulaire (Form Fields), cochez la case Files pour préciser que vous souhaitez envoyer des fichiers.
+3. Une fois cette case cochée, vous pourrez spécifier la clé du fichier et sélectionner le fichier à envoyer.
