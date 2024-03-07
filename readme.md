@@ -1372,6 +1372,7 @@ const dossier = path.resolve('./') + path.sep + 'public' + path.sep
 ```
 Ensuite, sur cette ligne, nous avons spécifié le dossier de destination (dans notre cas, public). `path.resolve('./')` permet de préciser que nous débutons à la racine, et `path.sep` est un séparateur de dossier qui s'ajuste en fonction du système utilisé (par exemple, \ pour Windows et / pour Linux).
 > Assurez-vous que le dossier public est déjà créé à la racine de votre application. Si ce n'est pas le cas, vous devez le créer.
+
 > Le module <a href="https://nodejs.org/api/path.html">path</a>  est déjà installé avec Node.js. Il n'est pas nécessaire de l'installer.
 
 ```js
