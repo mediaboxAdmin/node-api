@@ -1393,3 +1393,262 @@ Pour tester l'envoi des fichiers, nous allons également utiliser l'extension Th
 1. Dans le corps de la requête, sélectionnez l'option indiquant que vous envoyez des données sous forme de formulaire (Form).
 2. Dans les champs de formulaire (Form Fields), cochez la case Files pour préciser que vous souhaitez envoyer des fichiers.
 3. Une fois cette case cochée, vous pourrez spécifier la clé du fichier et sélectionner le fichier à envoyer.
+
+#### Uploader via une classe
+Jusqu'à présent, tout fonctionne correctement, mais pour des fonctionnalités un peu plus complexes, telles que la compression des fichiers, cela pourrait devenir un peu difficile. Pour résoudre ce problème, nous avons mis à disposition une classe Upload.js qui regroupe toutes les fonctionnalités nécessaires en ce qui concerne l'upload des fichiers.
+
+Cette classe utilise la bibliothèque <a href="https://sharp.pixelplumbing.com/">sharp</a> pour la manipulation des images.
+Commencez d'abord par installer la bibliothèque avec la commande suivante :
+```
+npm i sharp
+```
+Cette classe nécessite également une constante appelée `IMAGES_MIMES` que vous devez configurer dans le fichier `FILE_CONFIG.js`, situé dans le dossier `constants`. Ce fichier contient les types de fichiers que cette classe considérera comme des images. Créez le fichier et insérez-y le code suivant :
+```js
+// constants/FILE_CONFIG.js
+const IMAGES_MIMES = ['image/jpeg', 'image/gif', 'image/png']
+
+module.exports = {
+          IMAGES_MIMES
+}
+```
+
+Maintenant, créez la classe Upload.js dans le dossier class et placez le code suivant :
+```js
+const path = require('path')
+const fs = require('fs')
+const sharp = require('sharp')
+const { IMAGES_MIMES } = require('../constants/FILE_CONFIG')
+
+class Upload {
+     constructor() {
+          this.destinationPath = path.resolve('./') + path.sep + 'public' + path.sep + 'uploads'
+     }
+
+     async upload(file, withThumb = true, fileDestination, enableCompressing = true) {
+          try {
+               const extname = fileDestination ? path.extname(fileDestination) : path.extname(file.name)
+               const defaultFileName = Date.now() + extname
+               const finalFileName = fileDestination ? path.basename(fileDestination) : defaultFileName
+               const thumbName = path.parse(finalFileName).name + '_thumb' + path.extname(finalFileName)
+               const destinationFolder = fileDestination ? path.dirname(fileDestination) : this.destinationPath
+               const filePath = destinationFolder + path.sep + finalFileName
+               const thumbPath = destinationFolder + path.sep + thumbName
+               if (!fs.existsSync(destinationFolder)) {
+                    fs.mkdirSync(destinationFolder, { recursive: true })
+               }
+               const isImage = IMAGES_MIMES.includes(file.mimetype)
+               var thumbInfo = undefined
+               if (withThumb && isImage) {
+                    thumbInfo = await sharp(file.data).resize(354, 221, { fit: 'inside' }).toFormat('jpg').toFile(thumbPath)
+               }
+               var fileInfo = {}
+               if (isImage && enableCompressing) {
+                    fileInfo = await sharp(file.data).resize(500).toFormat(extname.substring(1), { quality: 100 }).toFile(filePath.toLowerCase())
+               } else {
+                    fileInfo = await file.mv(filePath.toLowerCase())
+               }
+               return {
+                    fileInfo: { ...fileInfo, fileName: finalFileName },
+                    thumbInfo: withThumb ? { ...thumbInfo, thumbName } : undefined
+               }
+          } catch (error) {
+               throw error
+          }
+     }
+}
+
+module.exports = Upload
+```
+
+Cette classe comporte une seule fonction `upload()` qui permet de déplacer le fichier vers le dossier précisé dans le paramètre `destinationPath` du constructeur.
+
+Pour utiliser cette classe, vous devez créer une autre classe qui hérite de Upload afin de pouvoir changer le paramètre `destinationPath`.
+
+Revenons à notre premier exemple de création des utilisateurs, mais cette fois nous allons ajouter la possibilité d'enregistrer une photo de l'utilisateur.
+
+La première étape consiste à créer une constante `IMAGES_DESTINATIONS` à l'intérieur du dossier `constants`, qui nous permettra de configurer les chemins vers les téléchargements.
+
+le fichier `IMAGES_DESTINATIONS.js` contient le code suivant:
+```js
+// constants/IMAGES_DESTINATIONS.js
+const path = require('path')
+
+const IMAGES_DESTINATIONS = {
+     utilisateurs: path.sep + 'uploads' + path.sep + 'images' + path.sep + 'utilisateurs'
+}
+
+module.exports = IMAGES_DESTINATIONS
+```
+
+Ensuite, nous allons créer une autre classe UtilisateurUpload.js dans le sous-dossier uploads situé à l'intérieur du dossier class, qui hérite de Upload.js. Ensuite, nous allons modifier le destinationPath, comme indiqué dans le code suivant :
+```js
+// class/uploads/UtilisateurUpload.js
+const IMAGES_DESTINATIONS = require("../../constants/IMAGES_DESTINATIONS")
+const Upload = require("../Upload")
+const path = require('path')
+
+class UtilisateurUpload extends Upload {
+     constructor() {
+          super()
+          this.destinationPath = path.resolve('./') + path.sep + 'public' + IMAGES_DESTINATIONS.utilisateurs
+     }
+}
+module.exports = UtilisateurUpload
+```
+Comme vous pouvez le constater, cette classe hérite de la classe principale `Upload` et modifie simplement la destination pour préciser l'emplacement où les téléchargements pour les utilisateurs seront stockés.
+
+Le chemin est précisé via la constante `IMAGES_DESTINATIONS` réservée à la gestion des destinations des images.
+
+Maintenant, nous allons ajouter une nouvelle colonne `IMAGE` à la table utilisateurs qui nous servira à enregistrer l'URL de l'image, comme illustré dans le code du modèle `Utilisateurs` :
+
+```js
+// models/Utilisateurs.js
+
+const { DataTypes } = require('sequelize')
+const sequelize = require('../utils/sequelize')
+const Profils = require('./Profils')
+
+const Utilisateurs = sequelize.define('utilisateurs', {
+     ID_UTILISATEUR: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          primaryKey: true,
+          autoIncrement: true
+     },
+     NOM: {
+          type: DataTypes.STRING(50),
+          allowNull: false
+     },
+     PRENOM: {
+          type: DataTypes.STRING(50),
+          allowNull: false
+     },
+     ID_PROFIL: {
+          type: DataTypes.INTEGER,
+          allowNull: false
+     },
+     IMAGE: {
+          type: DataTypes.STRING,
+          allowNull: true,
+          defaultValue: null
+     },
+}, {
+     freezeTableName: true,
+     tableName: 'utilisateurs',
+     timestamps: false
+})
+
+Utilisateurs.belongsTo(Profils, { as: 'profil', foreignKey: "ID_PROFIL" })
+
+module.exports = Utilisateurs
+```
+
+Maintenant, dans la fonction de création d'un nouvel utilisateur, nous pourrons valider et enregistrer l'image de l'utilisateur de la manière suivante :
+
+```js
+// controllers/utilisateurs.controller.js
+...
+const UtilisateurUpload = require("../class/uploads/UtilisateurUpload")
+const IMAGES_DESTINATIONS = require("../constants/IMAGES_DESTINATIONS")
+const path = require("path")
+
+const creerUtilisateur = async (req, res) => {
+     try {
+          const { NOM, PRENOM, ID_PROFIL } = req.body
+          const { IMAGE } = req.files || {}
+          const data = {
+               ...req.body,
+               ...req.files
+          }
+          const validation = new Validation(data, {
+               NOM: {
+                    required: true,
+                    alpha: true,
+                    length: [2, 20]
+               },
+               PRENOM: {
+                    required: true,
+                    alpha: true,
+                    length: [2, 20]
+               },
+               ID_PROFIL: {
+                    required: true,
+                    number: true,
+                    exists: "profils,ID_PROFIL"
+               },
+               IMAGE: {
+                    required: true,
+                    image: 2000000
+               }
+          }, {
+               NOM: {
+                    required: "Ce champ est obligatoire",
+                    alpha: "Le nom doit contenir des caractères alphanumériques",
+                    length: "Le nom doit comporter entre 2 et 20 caractères"
+               },
+               PRENOM: {
+                    required: "Ce champ est obligatoire",
+                    alpha: "Le prénom doit contenir des caractères alphanumériques",
+                    length: "Le prénom doit comporter entre 2 et 20 caractères"
+               },
+               ID_PROFIL: {
+                    required: "Le profil est obligatoire",
+                    number: "Ce champ doit contenir un nombre valide",
+                    exists: "Le profil n'existe pas"
+               },
+               IMAGE: {
+                    required: "L'image de l'utilisateur est obligatoire",
+                    image: "L'image est valide",
+                    size: "Image trop volumineuse (max: 2Mo)"
+               }
+          })
+          await validation.run()
+          const isValid = await validation.isValidate()
+          if(!isValid) {
+               const errors = await validation.getErrors()
+               return res.status(422).json({
+                    message: "La validation des données a echouée",
+                    data: errors
+               })
+          }
+          const utilisateurUpload = new UtilisateurUpload()
+          const fichier = await utilisateurUpload.upload(IMAGE)
+          const imageUrl = `${req.protocol}://${req.get("host")}${IMAGES_DESTINATIONS.utilisateurs}${path.sep}${fichier.fileInfo.fileName}` 
+          const nouveauUtilisateur = await Utilisateurs.create({
+               NOM: NOM,
+               PRENOM: PRENOM,
+               ID_PROFIL: ID_PROFIL,
+               IMAGE: imageUrl
+          })
+          res.status(200).json({
+               message: "Nouvel utilisateur créé avec succès",
+               data: nouveauUtilisateur
+          })
+     } catch (error) {
+          console.log(error)
+          res.status(500).send("Erreur interne du serveur")
+     }
+}
+...
+```
+
+Dans ce code, nous avons d'abord vérifié que nous avons reçu une image valide (ne dépassant pas 2 Mo), puis nous l'avons déplacée vers le répertoire précisé dans la classe `UtilisateurUpload`.
+
+Dans la variable `imageUrl`, nous avons enregistré l'URL complète vers l'image pour ensuite la stocker dans la base de données. L'image enregistree sera dans le repertoire `public/uploads/images/utilisateurs`
+
+Pour pouvoir visualiser l'image, vous devez, dans le point d'entrée de l'application, configurer en précisant le dossier où se trouvent les fichiers publics pour votre application :
+```js
+// server.js
+app.use(express.static(__dirname + "/public"));
+```
+Ceci permet d'indiquer que le dossier utilisé pour les fichiers publics se trouve dans le dossier `public`.
+
+Le lien de l'image enregistrée ressemble à ceci: `http://localhost:3000\uploads\images\utilisateurs\1709880286764.jpg`. Vous pouvez la visualiser en copiant cette URL dans la barre d'adresse de votre navigateur.
+
+Voici un tableau présentant et expliquant les paramètres que vous pouvez utiliser avec la fonction `upload()`:
+| Parametre | Type | Description |
+| :-------: | :-------: | :----------------------------------------------------------: |
+| file  | fileUpload.UploadedFile | Le fichier envoyé wt récupéré via `req.files`.  |
+| withThumb  | boolean | Par défaut, si vous uploadez une image, elle sera enregistrée avec sa miniature. Vous pouvez modifier ce comportement en passant `false` à ce paramètre.  |
+| fileDestination  | string | Par défaut, cette classe utilise le chemin défini dans `destinationPath` pour déplacer le fichier vers l'emplacement précisé. Cependant, lors de l'enregistrement direct, vous pouvez spécifier directement le chemin que vous souhaitez. |
+| enableCompressing  | string | Cela permet de spécifier si vous souhaitez compresser les images ou non. Par défaut, si vous uploadez une image, elle sera compressée à une qualité aussi légère que possible.  |

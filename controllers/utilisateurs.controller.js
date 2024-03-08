@@ -1,4 +1,7 @@
 const Validation = require("../class/Validation")
+const UtilisateurUpload = require("../class/uploads/UtilisateurUpload")
+const IMAGES_DESTINATIONS = require("../constants/IMAGES_DESTINATIONS")
+const path = require("path")
 const Profils = require("../models/Profils")
 const Utilisateurs = require("../models/Utilisateurs")
 
@@ -35,7 +38,12 @@ const findByid = async (req, res) => {
 const creerUtilisateur = async (req, res) => {
      try {
           const { NOM, PRENOM, ID_PROFIL } = req.body
-          const validation = new Validation(req.body, {
+          const { IMAGE } = req.files || {}
+          const data = {
+               ...req.body,
+               ...req.files
+          }
+          const validation = new Validation(data, {
                NOM: {
                     required: true,
                     alpha: true,
@@ -50,6 +58,10 @@ const creerUtilisateur = async (req, res) => {
                     required: true,
                     number: true,
                     exists: "profils,ID_PROFIL"
+               },
+               IMAGE: {
+                    required: true,
+                    image: 2000000
                }
           }, {
                NOM: {
@@ -66,6 +78,11 @@ const creerUtilisateur = async (req, res) => {
                     required: "Le profil est obligatoire",
                     number: "Ce champ doit contenir un nombre valide",
                     exists: "Le profil n'existe pas"
+               },
+               IMAGE: {
+                    required: "L'image de l'utilisateur est obligatoire",
+                    image: "L'image est valide",
+                    size: "Image trop volumineuse (max: 2Mo)"
                }
           })
           await validation.run()
@@ -77,10 +94,14 @@ const creerUtilisateur = async (req, res) => {
                     data: errors
                })
           }
+          const utilisateurUpload = new UtilisateurUpload()
+          const fichier = await utilisateurUpload.upload(IMAGE)
+          const imageUrl = `${req.protocol}://${req.get("host")}${IMAGES_DESTINATIONS.utilisateurs}${path.sep}${fichier.fileInfo.fileName}` 
           const nouveauUtilisateur = await Utilisateurs.create({
                NOM: NOM,
                PRENOM: PRENOM,
-               ID_PROFIL: ID_PROFIL
+               ID_PROFIL: ID_PROFIL,
+               IMAGE: imageUrl
           })
           res.status(200).json({
                message: "Nouvel utilisateur créé avec succès",

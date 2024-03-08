@@ -21,6 +21,11 @@ const Utilisateurs = sequelize.define('utilisateurs', {
           type: DataTypes.INTEGER,
           allowNull: false
      },
+     IMAGE: {
+          type: DataTypes.STRING,
+          allowNull: true,
+          defaultValue: null
+     },
 }, {
      freezeTableName: true,
      tableName: 'utilisateurs',
