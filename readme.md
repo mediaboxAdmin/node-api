@@ -1394,7 +1394,7 @@ Pour tester l'envoi des fichiers, nous allons également utiliser l'extension Th
 2. Dans les champs de formulaire (Form Fields), cochez la case Files pour préciser que vous souhaitez envoyer des fichiers.
 3. Une fois cette case cochée, vous pourrez spécifier la clé du fichier et sélectionner le fichier à envoyer.
 
-#### Uploader via une classe
+#### Uploader avec une classe
 Jusqu'à présent, tout fonctionne correctement, mais pour des fonctionnalités un peu plus complexes, telles que la compression des fichiers, cela pourrait devenir un peu difficile. Pour résoudre ce problème, nous avons mis à disposition une classe Upload.js qui regroupe toutes les fonctionnalités nécessaires en ce qui concerne l'upload des fichiers.
 
 Cette classe utilise la bibliothèque <a href="https://sharp.pixelplumbing.com/">sharp</a> pour la manipulation des images.
