@@ -26,6 +26,16 @@ const Utilisateurs = sequelize.define('utilisateurs', {
           allowNull: true,
           defaultValue: null
      },
+     EMAIL: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          defaultValue: null
+     },
+     MOT_DE_PASSE: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          defaultValue: null
+     },
 }, {
      freezeTableName: true,
      tableName: 'utilisateurs',

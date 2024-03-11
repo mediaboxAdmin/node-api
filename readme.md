@@ -22,8 +22,10 @@ Ceci est une liste des principales technologies et outils présentés dans ce gu
 - <a href="https://expressjs.com/">ExpresJS</a> - Un framework web pour Node.js qui simplifie la création d'une application
 - <a href="https://expressjs.com/">Sequelize</a> - Un ORM (Object-Relational Mapping) pour Node.js qui  simplifi l'interaction avec une base de données relationnelle 
 - <a href="https://jwt.io/">JWT (JSON Web Token)</a> - Un format ouvert utilisé pour transmettre des assertions entre un serveur et un client. Il est couramment utilisé dans le contexte de l'authentification et de l'autorisation dans les applications web et les services.
-- <a href="https://momentjs.com/">Moment</a> - Une bibliothèque JavaScript très populaire pour la manipulation, le formatage et l'affichage de dates et d'heure
-- <a href="socket.io">Socket.io</a> - Socket.IO est une bibliothèque JavaScript qui permet la communication en temps réel bidirectionnelle entre les clients web et les serveurs
+- <a href="https://www.npmjs.com/package/bcrypt">Bcrypt</a> - Une bibliothèque Node.js qui offre des fonctions de hachage de mot de passe sécurisées
+- <a href="https://www.npmjs.com/package/express-fileupload">Express-fileupload</a> - Un middleware  pour Express.js qui facilite la gestion des téléchargements de fichiers côté serveur dans une application Express.
+- <a href="https://www.npmjs.com/package/dotenv">Dotenv</a> - Une bibliothèque Node.js qui facilite la gestion des variables d'environnement dans les applications
+- <a href="https://nodemon.io/">Nodemon</a> - Un utilitaire qui surveille toute modification dans votre code source et redémarre automatiquement votre serveur. Parfait pour le développement.
 
 ## <a name="requirements"></a> Prérequis
 Pour tirer pleinement profit de cette formation, veuillez vous assurer de disposer des compétences préalables suivantes :
@@ -235,7 +237,7 @@ server.js
 ## <a name="express"></a> Comprendre express.js
 ### Les routes
 #### Introduction
-Les routes est un aspect crucial pour définir le comportement d'une application. Les routes déterminent comment l'application réagit aux requêtes HTTP des clients, en fonction de l'URL demandée et de la méthode HTTP utilisée (GET, POST, etc.).
+Les routes est un aspect importante pour définir le comportement d'une application. Les routes déterminent comment l'application réagit aux requêtes HTTP des clients, en fonction de l'URL demandée et de la méthode HTTP utilisée (GET, POST, etc.).
 
 Voici quelques-unes des méthodes HTTP les plus couramment utilisées :
 | Méthode |  description                          |
@@ -902,7 +904,7 @@ const getUtilisateurs = async (req, res) => {
 Dans la réponse, il y aura une nouvelle clé `profil` qui contient les informations du profil.
 
 ### Validation des données
-La validation des données est une étape cruciale dans le développement d'applications, car elle permet de garantir que les données entrantes sont conformes aux attentes et aux règles définies. En Node.js, plusieurs bibliothèques peuvent être utilisées pour la validation des données. L'une des bibliothèques les plus populaires est <a href="https://joi.dev/">Joi</a>.
+La validation des données est une étape importante dans le développement d'applications, car elle permet de garantir que les données entrantes sont conformes aux attentes et aux règles définies. En Node.js, plusieurs bibliothèques peuvent être utilisées pour la validation des données. L'une des bibliothèques les plus populaires est <a href="https://joi.dev/">Joi</a>.
 
 Pour la suite de cette formation, nous n'utiliserons pas "Joi". Nous disposons d'une classe appelée "Validation" que nous utiliserons pour valider les données. L'avantage de cette classe est sa simplicité et sa facilité d'utilisation, avec la possibilité d'ajouter des validations personnalisées.
 
@@ -1652,3 +1654,474 @@ Voici un tableau présentant et expliquant les paramètres que vous pouvez utili
 | withThumb  | boolean | Par défaut, si vous uploadez une image, elle sera enregistrée avec sa miniature. Vous pouvez modifier ce comportement en passant `false` à ce paramètre.  |
 | fileDestination  | string | Par défaut, cette classe utilise le chemin défini dans `destinationPath` pour déplacer le fichier vers l'emplacement précisé. Cependant, lors de l'enregistrement direct, vous pouvez spécifier directement le chemin que vous souhaitez. |
 | enableCompressing  | string | Cela permet de spécifier si vous souhaitez compresser les images ou non. Par défaut, si vous uploadez une image, elle sera compressée à une qualité aussi légère que possible.  |
+### Authentification
+#### Introduction
+L'authentification dans une application fait référence au processus de vérification de l'identité d'un utilisateur ou d'une application qui tente d'accéder à des ressources protégées. Cela garantit que seules les parties autorisées peuvent effectuer certaines actions ou accéder à certaines données.
+
+Il existe plusieurs méthodes d'authentification dans Express.js, mais l'une des approches courantes est l'utilisation de tokens JWT (JSON Web Tokens) et c'est ce que nous allons decouvrir dans ce chapitre.
+
+#### JWT
+<a href="https://www.npmjs.com/package/jsonwebtoken">jsonwebtoken</a> est un module Node.js qui permet de générer et de vérifier des JSON Web Tokens (JWT). Les JWT sont un format ouvert (RFC 7519) qui représente des informations sous la forme d'objets JSON, signés de manière cryptographique pour vérifier leur intégrité et, éventuellement, chiffrés pour assurer la confidentialité. Les JWT sont souvent utilisés pour l'authentification et l'autorisation dans les applications web et les API.
+
+Installation du module:
+```
+npm install jsonwebtoken
+```
+
+#### Enregistrement de l'utilisateur 
+Lorsqu'un utilisateur s'inscrit ou s'authentifie pour la première fois, le serveur génère un JWT qui contient des informations telles que l'identifiant de l'utilisateur et son rôle. Ce token sera utilisé comme access token.
+```js
+const jwt = require('jsonwebtoken');
+
+const user = {
+    userId: 123,
+    username: 'utilisateur123',
+    role: 'utilisateur',
+};
+
+const secretKey = 'votre_clé_secrète';
+
+const accessToken = jwt.sign(user, secretKey, { expiresIn: '1h' });
+```
+#### Envoi de l'access token au client
+Une fois le token généré, il est envoyé au client, généralement inclus dans la réponse à la demande d'authentification. Le client stocke ensuite ce token de manière sécurisée, par exemple dans un cookie ou dans le stockage local du navigateur.
+
+#### Utilisation de l'access token dans les requêtes vers l'API
+Pour accéder aux ressources protégées de l'API, le client doit inclure l'access token dans les en-têtes de ses requêtes. Ceci peut être accompli en ajoutant un en-tête d'autorisation (par exemple, Authorization: Bearer VOTRE_ACCESS_TOKEN) à chaque requête.
+Le serveur de l'API peut alors vérifier la validité du token à l'aide de la clé secrète partagée et autoriser ou refuser l'accès en conséquence.
+
+#### Utilisation de l'access token dans les requêtes vers l'API
+
+#### Renouvellement de l'access token (si nécessaire) 
+Si l'access token a une durée de vie limitée et expire, le client peut demander un nouveau token en utilisant un refresh token ou en demandant à l'utilisateur de s'authentifier à nouveau.
+
+> Il est nécessaire de protéger la clé secrète utilisée pour signer les tokens et de mettre en œuvre des mécanismes de sécurité tels que HTTPS pour assurer la confidentialité des données transitant entre le client et le serveur.
+
+#### Inscription de l'utilisateur
+Afin de comprendre l'utilisation des JWT dans le cadre de cette formation, nous maintiendrons l'utilisation de la table `utilisateurs`. Pour ce faire, nous prévoyons d'ajouter deux nouvelles colonnes à la table à savoir la colonne `EMAIL` et la colonne `MOT_DE_PASSE`. Ces colonnes sont destinées à faciliter l'enregistrement des identifiants de l'utilisateur.
+
+```js
+// // models/Utilisateurs.js
+const { DataTypes } = require('sequelize');
+const sequelize = require('../utils/sequelize');
+const Profils = require('./Profils');
+
+const Utilisateurs = sequelize.define('utilisateurs', {
+     ID_UTILISATEUR: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          primaryKey: true,
+          autoIncrement: true
+     },
+     NOM: {
+          type: DataTypes.STRING(50),
+          allowNull: false
+     },
+     PRENOM: {
+          type: DataTypes.STRING(50),
+          allowNull: false
+     },
+     ID_PROFIL: {
+          type: DataTypes.INTEGER,
+          allowNull: false
+     },
+     IMAGE: {
+          type: DataTypes.STRING,
+          allowNull: true,
+          defaultValue: null
+     },
+     EMAIL: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          defaultValue: null
+     },
+     MOT_DE_PASSE: {
+          type: DataTypes.STRING,
+          allowNull: false,
+          defaultValue: null
+     },
+}, {
+     freezeTableName: true,
+     tableName: 'utilisateurs',
+     timestamps: false
+})
+
+Utilisateurs.belongsTo(Profils, { as: 'profil', foreignKey: "ID_PROFIL" })
+
+module.exports = Utilisateurs
+```
+
+Dans le contrôleur, nous procéderons d'abord à la récupération et à la validation de l'email (EMAIL) et du mot de passe (MOT_DE_PASSE). Une fois que l'utilisateur est enregistré, nous générerons un jeton d'accès (access token) que nous inclurons ensuite dans la réponse. Voici à quoi ressemble la fonction de création d'un nouvel utilisateur :
+```js
+// controllers/utilisateurs.controller.js
+...
+const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt")
+const dotenv = require("dotenv")
+dotenv.config()
+
+const creerUtilisateur = async (req, res) => {
+     try {
+          const { NOM, PRENOM, ID_PROFIL, EMAIL, MOT_DE_PASSE } = req.body
+          const { IMAGE } = req.files || {}
+          const data = {
+               ...req.body,
+               ...req.files
+          }
+          const validation = new Validation(data, {
+               NOM: {
+                    required: true,
+                    alpha: true,
+                    length: [2, 20]
+               },
+               PRENOM: {
+                    required: true,
+                    alpha: true,
+                    length: [2, 20]
+               },
+               ID_PROFIL: {
+                    required: true,
+                    number: true,
+                    exists: "profils,ID_PROFIL"
+               },
+               IMAGE: {
+                    required: true,
+                    image: 2000000
+               },
+               EMAIL: {
+                    required: true,
+                    email: true,
+                    unique: "utilisateurs,EMAIL"
+               },
+               MOT_DE_PASSE: {
+                    required: true,
+                    length: [8]
+               }
+          }, {
+               NOM: {
+                    required: "Ce champ est obligatoire",
+                    alpha: "Le nom doit contenir des caractères alphanumériques",
+                    length: "Le nom doit comporter entre 2 et 20 caractères"
+               },
+               PRENOM: {
+                    required: "Ce champ est obligatoire",
+                    alpha: "Le prénom doit contenir des caractères alphanumériques",
+                    length: "Le prénom doit comporter entre 2 et 20 caractères"
+               },
+               ID_PROFIL: {
+                    required: "Le profil est obligatoire",
+                    number: "Ce champ doit contenir un nombre valide",
+                    exists: "Le profil n'existe pas"
+               },
+               IMAGE: {
+                    required: "L'image de l'utilisateur est obligatoire",
+                    image: "L'image est valide",
+                    size: "Image trop volumineuse (max: 2Mo)"
+               },
+               EMAIL: {
+                    required: "L'email est obligatoire",
+                    email: "Email invalide",
+                    unique: "Email déjà utilisé"
+               },
+               MOT_DE_PASSE: {
+                    required: "Le mot de passe est obligatoire",
+                    length: "Le mot de passe doit contenir au moins 8 caracteres"
+               }
+          })
+          await validation.run()
+          const isValid = await validation.isValidate()
+          if(!isValid) {
+               const errors = await validation.getErrors()
+               return res.status(422).json({
+                    message: "La validation des données a echouée",
+                    data: errors
+               })
+          }
+          const utilisateurUpload = new UtilisateurUpload()
+          const fichier = await utilisateurUpload.upload(IMAGE)
+          const imageUrl = `${req.protocol}://${req.get("host")}${IMAGES_DESTINATIONS.utilisateurs}${path.sep}${fichier.fileInfo.fileName}`
+          const salt = await bcrypt.genSalt()
+          const password = await bcrypt.hash(MOT_DE_PASSE, salt)
+          const nouveauUtilisateur = await Utilisateurs.create({
+               NOM: NOM,
+               PRENOM: PRENOM,
+               ID_PROFIL: ID_PROFIL,
+               IMAGE: imageUrl,
+               EMAIL: EMAIL,
+               MOT_DE_PASSE: password
+          })
+          const payload = {
+                    ID_UTILISATEUR: nouveauUtilisateur.toJSON().ID_UTILISATEUR
+          }
+          const accessToken = jwt.sign(payload, process.env.JWT_PRIVATE_KEY, { expiresIn: 259200 })
+          const { MOT_DE_PASSE: mdp, ...public } = utilisateur.toJSON()
+          res.status(200).json({
+               message: "Nouvel utilisateur créé avec succès",
+               data: {
+                    ...public,
+                    token: accessToken
+               }
+          })
+     } catch (error) {
+          console.log(error)
+          res.status(500).send("Erreur interne du serveur")
+     }
+}
+...
+```
+
+Dans ce code, nous avons utilisé <a href="https://www.npmjs.com/package/bcrypt">bcrypt</a> pour crypter le mot de passe de l'utilisateur
+
+Comme vous pouvez le remarquer, pour générer un jeton (avec la méthode `jwt.sign()`), nous avons passé un payload qui contient les données à stocker dans le jeton (`ID_UTILISATEUR` dans notre cas). Ensuite, nous avons récupéré la clé secrète pour le cryptage des jetons que nous avons placée dans le fichier `.env `avec le paramètre `JWT_PRIVATE_KEY`.
+
+> Il est strictement déconseillé de mettre des informations sensibles dans le payload, comme le mot de passe de l'utilisateur.
+Dans cet exemple, nous avons défini un temps d'expiration du jeton à 259200 secondes (soit 3 jours). Cela indique que le jeton ne sera plus valide après 3 jours.
+> Il est strictement deconseille de mettre un delais plus longue  pour un token d'access
+
+Maintenant, si vous testez la route de création d'un utilisateur, vous remarquerez que la réponse envoyée contient également le jeton d'accès.
+
+#### Connexion de l'utilisateur
+Le but de la connexion est de permettre aux utilisateurs déjà inscrits de se connecter. Pour ce faire, l'utilisateur doit envoyer son adresse électronique et son mot de passe afin de vérifier l'existence d'un utilisateur correspondant à ces informations. Une fois que l'utilisateur est trouvé et validé, un nouveau jeton d'accès sera généré, qu'il pourra utiliser pour accéder aux ressources sécurisées.
+
+La route de connexion sera enregistrée dans le module auth dans le fichier d'entrée de l'application.
+```js
+// routes/auth.routes.js
+const express = require("express")
+const auth_routes = express.Router("")
+const auth_controller = require("../controllers/auth.controller")
+
+auth_routes.post("/login", auth_controller.login)
+
+module.exports = auth_routes
+```
+```js
+// server.js
+const express = require('express');
+const utilisateurs_routes = require('./routes/utilisateurs.routes');
+const app = express();
+const dotenv = require('dotenv');
+const upload_routes = require('./routes/upload.routes');
+const fileUpload = require("express-fileupload");
+const auth_routes = require('./routes/auth.routes');
+dotenv.config()
+
+const port = process.env.PORT;
+
+app.use(express.static(__dirname + "/public"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(fileUpload());
+// app.use(monMiddleware);
+
+// Middleware spécifique à une route
+app.use('/', utilisateurs_routes)
+app.use('/upload', upload_routes)
+app.use('/auth', auth_routes)
+
+app.listen(port, () => {
+  console.log(`Serveur écoutant sur le port ${port}`);
+});
+```
+
+```js
+// controllers/auth.controller.js
+const Validation = require("../class/Validation")
+const Utilisateurs = require("../models/Utilisateurs")
+const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
+const dotenv = require("dotenv")
+dotenv.config()
+
+const login = async (req, res) => {
+     try {
+          const { EMAIL, MOT_DE_PASSE } = req.body
+          const validation = new Validation(req.body, {
+               EMAIL: {
+                    required: true,
+                    email: true
+               },
+               MOT_DE_PASSE: {
+                    required: true
+               }
+          }, {
+               EMAIL: {
+                    required: "L'email est obligatoire",
+                    email: "Email invalide"
+               },
+               MOT_DE_PASSE: {
+                    required: "Le mot de passe est obligatoire"
+               }
+          })
+          await validation.run()
+          const isValid = await validation.isValidate()
+          if (!isValid) {
+               const errors = await validation.getErrors()
+               return res.status(422).json({
+                    message: "La validation des données a echouée",
+                    data: errors
+               })
+          }
+          const utilisateur = await Utilisateurs.findOne({
+               where: {
+                    EMAIL: EMAIL
+               }
+          })
+          if(utilisateur) {
+               const isPasswordValid = await bcrypt.compare(MOT_DE_PASSE, utilisateur.toJSON().MOT_DE_PASSE)
+               if(isPasswordValid) {
+                    const payload = {
+                              ID_UTILISATEUR: utilisateur.toJSON().ID_UTILISATEUR
+                    }
+                    const accessToken = jwt.sign(payload, process.env.JWT_PRIVATE_KEY, { expiresIn: 259200 })
+                    const { MOT_DE_PASSE: mdp, ...public } = utilisateur.toJSON()
+                    res.status(200).json({
+                         message: "Identifiants correct",
+                         data: {
+                              ...public,
+                              token: accessToken
+                         }
+                    })
+               } else {
+                    res.status(403).json({
+                         message: "Identifiants incorrects"
+                    })
+               }
+          } else {
+               res.status(403).json({
+                    message: "Identifiants incorrects"
+               })
+          }
+
+     } catch (error) {
+          console.log(error)
+          res.status(500).send("Erreur interne du serveur")
+     }
+}
+
+module.exports = {
+     login
+}
+```
+À l'intérieur de ce contrôleur, une seule fonction nommée login vérifie l'authenticité de l'utilisateur. Si les identifiants fournis sont corrects, cela déclenche la génération d'un nouveau jeton d'accès.
+
+#### Valider un token d'access et lier un utilisateur
+Maintenant que le client a obtenu le jeton (après inscription ou connexion), ce jeton sera passé dans les en-têtes (headers) de chaque requête, et notre application procédera à la vérification de la validité du jeton. Pour simplifier cela, nous allons créer un middleware qui sera exécuté pour chaque requête envoyée à notre application.
+
+Créez un fichier nommé bindUser.js à l'intérieur du dossier middlewares et insérez le code suivant :
+```js
+// middlewares/bindUser.js
+const jwt = require("jsonwebtoken");
+
+const bindUser = (request, response, next) => {
+     const bearer = request.headers.authorization;
+     const bearerToken = bearer && bearer.split(" ")[1];
+     const token = bearerToken
+     if (token) {
+          jwt.verify(token, process.env.JWT_PRIVATE_KEY, (error, user) => {
+               if (error) {
+                    next();
+               } else {
+                    request.userId = user.ID_UTILISATEUR;
+                    next();
+               }
+          });
+     } else {
+          next();
+     }
+};
+module.exports = bindUser;
+```
+Ce code vérifie que le jeton passé dans les en-têtes de la requête (avec la clé Authorization) est valide.
+
+Si le jeton est valide, nous ajouterons `userId` à la requête, ce qui nous permettra d'indiquer que le client exécutant la requête est connecté et authentifié. Ensuite, nous passerons au middleware suivant en utilisant la fonction `next()`.
+
+Si le jeton n'est pas valide, nous passerons simplement au middleware suivant en utilisant la fonction next(), sans pour autant ajouter userId à la requête.
+Une fois que le middleware est créé, il doit être enregistré dans le point d'entrée de l'application comme suit :
+```js
+// server.js
+const express = require('express');
+const utilisateurs_routes = require('./routes/utilisateurs.routes');
+const app = express();
+const dotenv = require('dotenv');
+const upload_routes = require('./routes/upload.routes');
+const fileUpload = require("express-fileupload");
+const auth_routes = require('./routes/auth.routes');
+const bindUser = require('./middlewares/bindUser');
+dotenv.config()
+
+const port = process.env.PORT;
+
+app.use(express.static(__dirname + "/public"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(fileUpload());
+// app.use(monMiddleware);
+
+// Middleware spécifique à une route
+app.all("*", bindUser); // middleware pour verifier le token d'access
+app.use('/', utilisateurs_routes)
+app.use('/upload', upload_routes)
+app.use('/auth', auth_routes)
+
+app.listen(port, () => {
+  console.log(`Serveur écoutant sur le port ${port}`);
+});
+``` 
+
+#### Sécuriser  une ressource
+Maintenant que nous sommes capables de déterminer si un utilisateur est connecté ou non lors de l'exécution d'une requête, il est temps de passer à la sécurisation des ressources sensibles. Pour simplifier ce processus, nous allons créer un autre middleware appelé `requireAuth` que nous utiliserons pour indiquer que la ressource nécessite une authentification pour y accéder.
+
+Créez un fichier requireAuth à l'intérieur du dossier middlewares et insérez le code suivant :
+```js
+// middlewares/requireAuth.js
+const requireAuth = (request, response, next) => {
+  if (request.userId) {
+    next();
+  } else {
+    response.status(401).json({
+      errors: {
+        main: "Jeton d'authentification manquante ou invalide",
+      },
+      authStatus: request.authStatus
+    });
+  }
+};
+
+module.exports = requireAuth;
+```
+Ce code vérifie simplement que la clé userId, que nous avons ajoutée via `bindUser`, existe dans la requête. Si elle existe, nous passerons au middleware suivant en utilisant la fonction `next()`, sinon nous bloquerons la suite en renvoyant une réponse avec le statut 401.
+
+Maintenant que le middleware est créé, nous pourrons l'utiliser chaque fois que nous voulons sécuriser une ressource. Prenons, par exemple, le cas où nous voulons exiger une connexion pour accéder à la liste des utilisateurs. Nous pourrions le faire de la manière suivante :
+
+```js
+const express = require("express")
+const utilisateurs_routes = express.Router("")
+const utilisateurs_controller = require("../controllers/utilisateurs.controller")
+const requireAuth = require("../middlewares/requireAuth")
+
+utilisateurs_routes.get("/utilisateurs", requireAuth, utilisateurs_controller.getUtilisateurs)
+utilisateurs_routes.post("/utilisateurs", utilisateurs_controller.creerUtilisateur)
+utilisateurs_routes.get("/utilisateurs/:ID_UTILISATEUR", requireAuth, utilisateurs_controller.findByid)
+utilisateurs_routes.put("/utilisateurs/:ID_UTILISATEUR", requireAuth, utilisateurs_controller.modifierUtilisateur)
+utilisateurs_routes.delete("/utilisateurs/:ID_UTILISATEUR", requireAuth, utilisateurs_controller.supprimerUtilisateur)
+
+module.exports = utilisateurs_routes
+```
+
+
+Si vous accédez maintenant à la route de récupération des utilisateurs, vous recevrez une réponse indiquant que vous devez vous connecter.
+#### Envoyer un token d'access avec Thunder Client
+Pour envoyer un jeton d'accès avec le client Thunder, commencez d'abord par vous connecter. Une fois que vous avez obtenu le jeton d'accès, vous le transmettez en tant qu'en-tête de la requête, comme illustré dans cette image :
+![Envoyer un token d'access avec Thunder Client](https://i.ibb.co/SRnhFvw/Screenshot-2024-03-10-092614.png)
+
+### Travail pratique
+Maintenant que nous avons couvert tous les éléments nécessaires pour créer une API REST avec Express.js et Node.js, cette section est dédiée à la mise en pratique de tout ce que nous avons vu dans cette formation à travers un travail pratique.
+
+Le travail consiste en la création d'une petite application de publication de contenu.
+
+Voici à quoi doit ressembler l'application :
+- L'utilisateur doit d'abord créer un compte qui lui donnera accès à la publication de contenu. Chaque utilisateur doit renseigner ses informations d'identification, y compris la date de naissance et une image.
+- Une fois le compte créé, il aura également la possibilité de se connecter à son compte via son adresse e-mail et son mot de passe.
+- Une fois connecté, il pourra visualiser les publications qu'il a publiées.
+- L'utilisateur aura également la possibilité de créer, modifier ou supprimer ses propres publications. Chaque publication aura un titre, une description, une date de publication et une image.
+- Les routes de récupération et de gestion des publications doivent être protégées, et l'utilisateur aura uniquement la possibilité de gérer ses propres publications. Il n'aura pas le droit de voir les publications des autres utilisateurs.

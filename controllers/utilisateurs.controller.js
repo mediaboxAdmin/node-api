@@ -4,6 +4,10 @@ const IMAGES_DESTINATIONS = require("../constants/IMAGES_DESTINATIONS")
 const path = require("path")
 const Profils = require("../models/Profils")
 const Utilisateurs = require("../models/Utilisateurs")
+const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt")
+const dotenv = require("dotenv")
+dotenv.config()
 
 const getUtilisateurs = async (req, res) => {
      try {
@@ -37,7 +41,7 @@ const findByid = async (req, res) => {
 
 const creerUtilisateur = async (req, res) => {
      try {
-          const { NOM, PRENOM, ID_PROFIL } = req.body
+          const { NOM, PRENOM, ID_PROFIL, EMAIL, MOT_DE_PASSE } = req.body
           const { IMAGE } = req.files || {}
           const data = {
                ...req.body,
@@ -62,6 +66,15 @@ const creerUtilisateur = async (req, res) => {
                IMAGE: {
                     required: true,
                     image: 2000000
+               },
+               EMAIL: {
+                    required: true,
+                    email: true,
+                    unique: "utilisateurs,EMAIL"
+               },
+               MOT_DE_PASSE: {
+                    required: true,
+                    length: [8]
                }
           }, {
                NOM: {
@@ -83,6 +96,15 @@ const creerUtilisateur = async (req, res) => {
                     required: "L'image de l'utilisateur est obligatoire",
                     image: "L'image est valide",
                     size: "Image trop volumineuse (max: 2Mo)"
+               },
+               EMAIL: {
+                    required: "L'email est obligatoire",
+                    email: "Email invalide",
+                    unique: "Email déjà utilisé"
+               },
+               MOT_DE_PASSE: {
+                    required: "Le mot de passe est obligatoire",
+                    length: "Le mot de passe doit contenir au moins 8 caracteres"
                }
           })
           await validation.run()
@@ -97,15 +119,27 @@ const creerUtilisateur = async (req, res) => {
           const utilisateurUpload = new UtilisateurUpload()
           const fichier = await utilisateurUpload.upload(IMAGE)
           const imageUrl = `${req.protocol}://${req.get("host")}${IMAGES_DESTINATIONS.utilisateurs}${path.sep}${fichier.fileInfo.fileName}` 
+          const salt = await bcrypt.genSalt()
+          const password = await bcrypt.hash(MOT_DE_PASSE, salt)
           const nouveauUtilisateur = await Utilisateurs.create({
                NOM: NOM,
                PRENOM: PRENOM,
                ID_PROFIL: ID_PROFIL,
-               IMAGE: imageUrl
+               IMAGE: imageUrl,
+               EMAIL: EMAIL,
+               MOT_DE_PASSE: password
           })
+          const payload = {
+                    ID_UTILISATEUR: nouveauUtilisateur.toJSON().ID_UTILISATEUR
+          }
+          const accessToken = jwt.sign(payload, process.env.JWT_PRIVATE_KEY, { expiresIn: 259200 })
+          const { MOT_DE_PASSE: mdp, ...public } = nouveauUtilisateur.toJSON()
           res.status(200).json({
                message: "Nouvel utilisateur créé avec succès",
-               data: nouveauUtilisateur
+               data: {
+                    ...public,
+                    token: accessToken
+               }
           })
      } catch (error) {
           console.log(error)
