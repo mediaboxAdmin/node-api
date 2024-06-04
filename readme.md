@@ -4,7 +4,7 @@ Le contenu de ce guide vise non pas à enseigner exhaustivement chaque technolog
 Express.js peut être utilisé pour créer différents types d'applications. Cependant, le but de ce document est de vous fournir des directives pour créer une API REST que vous pourrez ensuite consommer à travers une application.
 
 ## <a name="belongs"></a> A qui appartient ce guide
-Ce manuel s'adresse aux développeurs de la société Mediabox, visant à approfondir et enrichir leurs compétences dans l'utilisation de Node.js et Express.js pour le développement d'API. Il est expressément interdit de diffuser le contenu de ce guide à des individus n'appartenant pas à l'entreprise, dans le but de garantir une intégrité optimale.
+Ce manuel s'adresse aux développeurs de la société <a href="https://mediabox.bi/">Mediabox</a>, visant à approfondir et enrichir leurs compétences dans l'utilisation de Node.js et Express.js pour le développement d'API. Il est expressément interdit de diffuser le contenu de ce guide à des individus n'appartenant pas à l'entreprise, dans le but de garantir une intégrité optimale.
 
 ## <a name="purpose"></a> Objectifs de la Formation
 À l'issue de cette formation, l'apprenant sera en mesure de :
@@ -20,7 +20,7 @@ Ceci est une liste des principales technologies et outils présentés dans ce gu
 - <a href="https://nodejs.org/en">NodeJs</a> - Permet d'exécuter du code JavaScript côté serveur
 - <a href="https://www.npmjs.com/">NPM (Node Package Manager)</a> - Est le gestionnaire de paquets officiel pour l'écosystème Node.js
 - <a href="https://expressjs.com/">ExpresJS</a> - Un framework web pour Node.js qui simplifie la création d'une application
-- <a href="https://expressjs.com/">Sequelize</a> - Un ORM (Object-Relational Mapping) pour Node.js qui  simplifi l'interaction avec une base de données relationnelle 
+- <a href="https://sequelize.org/">Sequelize</a> - Un ORM (Object-Relational Mapping) pour Node.js qui  simplifi l'interaction avec une base de données relationnelle 
 - <a href="https://jwt.io/">JWT (JSON Web Token)</a> - Un format ouvert utilisé pour transmettre des assertions entre un serveur et un client. Il est couramment utilisé dans le contexte de l'authentification et de l'autorisation dans les applications web et les services.
 - <a href="https://www.npmjs.com/package/bcrypt">Bcrypt</a> - Une bibliothèque Node.js qui offre des fonctions de hachage de mot de passe sécurisées
 - <a href="https://www.npmjs.com/package/express-fileupload">Express-fileupload</a> - Un middleware  pour Express.js qui facilite la gestion des téléchargements de fichiers côté serveur dans une application Express.
@@ -38,7 +38,7 @@ Pour tirer pleinement profit de cette formation, veuillez vous assurer de dispos
 # <a name="deroulement"></a> Déroulement de la formation
 La formation sera divisée en plusieurs sections. La première partie abordera les fondamentaux de la technologie Node.js avec Express.js. Dans la deuxième partie, nous dresserons la liste des meilleures bibliothèques à utiliser pour développer une application performante et sécurisée. Enfin, nous conclurons par un exemple pratique visant à mettre en application les connaissances acquises.
 
-# <a name="environement"></a> Préparation d'un environnement
+## <a name="environement"></a> Préparation d'un environnement
 Pour créer un nouveau projet avec Node.js et Express.js:
 - Assurez-vous d'avoir Node.js installé sur votre machine. Vous pouvez télécharger la dernière version depuis le site officiel de Node.js : https://nodejs.org/.
 - npm (Node Package Manager) est généralement inclus avec l'installation de Node.js.
@@ -162,6 +162,7 @@ Voici les étapes pour installer Thunder Client dans VSCode:
 4. Un nouvel onglet s'ouvrira, vous permettant de spécifier le lien de la requête à tester. Choisissez  la méthode  `GET` et saisissez l'URL `http://localhost:3000`  dans la barre d'adresse, puis cliquez sur le bouton `SEND` comme illustré dans l'image ci-dessous :
 ![Thunder Client Home](https://i.ibb.co/GvT2r1m/Screenshot-2024-01-16-164136.png)
 5. Une fois la requête soumise, vous verrez le message `Bienvenue sur votre application Express.js !`` que nous avons renvoyé en réponse à la requête sur la route racine.
+
 > Bravo ! Vous venez de créer votre première application Express.js !
 
 ## <a name="structure"></a> Structure
@@ -237,7 +238,7 @@ server.js
 # <a name="express"></a> Comprendre express.js
 ## Les routes
 ### Introduction
-Les routes est un aspect importante pour définir le comportement d'une application. Les routes déterminent comment l'application réagit aux requêtes HTTP des clients, en fonction de l'URL demandée et de la méthode HTTP utilisée (GET, POST, etc.).
+Les routes sont un aspect important pour définir le comportement d'une application. Les routes déterminent comment l'application réagit aux requêtes HTTP des clients, en fonction de l'URL demandée et de la méthode HTTP utilisée (GET, POST, etc.).
 
 Voici quelques-unes des méthodes HTTP les plus couramment utilisées :
 | Méthode |  description                          |
@@ -248,7 +249,8 @@ Voici quelques-unes des méthodes HTTP les plus couramment utilisées :
 | DELETE   | Supprimer des données sur le serveur. |
 
 > Trouve <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">ici</a> une liste complète des méthodes HTTP
-#### Création d'une route
+
+### Création d'une route
 Pour créer une route, Créez un fichier nommé  `utilisateurs.routes.js` dans le dossier `routes`.  Ce fichier sera dédié à la définition des routes spécifiques aux utilisateurs. Veuillez inclure le code suivant :
 
 ```js
@@ -263,7 +265,7 @@ module.exports = utilisateurs_routes
 ```
 Ce code spécifie une seule route GET `"/utilisateurs"` qui sera gérée par la fonction `getUtilisateurs` du contrôleur des utilisateurs.
 
-### Les controllers
+## Les controllers
 Maintenant apres avoir creer une route, creer un autre fichier `utilisateurs.controller.js` dans le dossier `controllers` qui va contenier les fonctions qui vont agir comme handler pour les routes des utilisteurs:
 ```js
 // utilisateurs.controller.js
@@ -301,9 +303,9 @@ Voici une liste de quelques codes de statut HTTP (codes de réponse) couramment 
 | 403   | FORBIDDEN  |  L'accès à la ressource est refusé pour des raisons autres que l'authentification.  |
 | 404   | NOT FOUND  |  La ressource demandée n'a pas été trouvée sur le serveur.  |
 | 500    | INTERNAL SERVER ERROR  | Erreur générique indiquant qu'une condition inattendue a empêché le serveur de satisfaire la requête..  |
-> <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">Liste complet des codes de statut HTTP</a>
+> <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">Liste complète des codes de statut HTTP</a>
 
-### Liaison du point d'entrée et les routes
+## Liaison du point d'entrée et les routes
 
 Maintenant que nous avons créé nos routes et défini les fonctions qui seront appelées lorsqu'elles seront sollicitées, nous allons les configurer dans le fichier `server.js` afin de les rendre identifiables au sein de l'application.
 
@@ -323,14 +325,14 @@ app.listen(port, () => {
 ```
 Dans ce code, `app.use('/', utilisateurs_routes)` montre que les routes définies dans `utilisateurs.routes.js` sont montées sur la racine de l'application.  `'/'` spécifie le chemin de base pour lequel le middleware sera activé. Nous aborderons les middlewares un peu plus tard.
 
-### Tester l'application
+## Tester l'application
 Maintenant que tout est configuré, nous pouvons procéder aux tests de notre route. Pour ce faire, démarrez l'application en utilisant la commande suivante :
 ```
 node server.js
 ```
 Une fois l'application démarrée, ouvrez l'extension `Thunder Client`, choisissez la méthode `GET`, puis saisissez l'adresse `http://localhost:3000/utilisateurs`. Vous verrez ainsi une liste des utilisateurs dans la réponse, conformément à ce que nous avons défini dans notre fonction.
 
-### Les middlewares
+## Les middlewares
 Les middlewares sont des fonctions qui ont accès à l'objet de requête (req), à l'objet de réponse (res), et à la fonction next dans le cycle de vie de la requête. Ils sont utilisés pour effectuer des opérations telles que la modification des objets de requête et de réponse
 
 On distingue trois types de middlewares:
@@ -363,9 +365,10 @@ app.listen(port, () => {
 ```
 > Les middlewares jouent un rôle essentiel dans l'authentification pour vérifier si un utilisateur est correctement authentifié avant de permettre l'accès à certaines routes ou ressources.
 
-### Comprendre la requête et la réponse
+## Comprendre la requête et la réponse
 Dans Express.js, "req" et "res" sont des abréviations couramment utilisées pour représenter les objets de requête (request) et de réponse (response) dans le contexte d'une application web. Ces objets sont essentiels pour gérer les requêtes HTTP entrantes et générer les réponses correspondantes.
-#### La requête
+
+### La requête
 `req (Request)` : Cet objet représente la requête HTTP entrante et contient des informations sur la requête telle que les paramètres de l'URL, les données du corps de la requête(body), les en-têtes(headers), etc. Vous pouvez accéder à ces informations à l'intérieur de vos routes pour prendre des décisions en fonction de la requête.
 
 Exemple d'utilisation dans une route :
@@ -384,7 +387,7 @@ app.get('/exemple', (req, res) => {
   // Logique de traitement de la requête ici
 });
 ```
-#### La réponse
+### La réponse
 `res (Response)` : Cet objet représente la réponse HTTP que votre serveur génère et envoie en réponse à la requête. À travers l'objet `res`, vous pouvez définir des en-têtes de réponse, envoyer des données au client, rediriger vers d'autres URL, etc.
 
 Exemple d'utilisation dans une route :
@@ -778,15 +781,13 @@ module.exports = {
 }
 ```
 
-Maintenant que le code est prêt, nous pouvons tester les differentes routes avec `Thunder Client`:
+Maintenant que le code est prêt, nous pouvons tester les différentes routes avec `Thunder Client`:
 
 ## Insertion d'un utilisateur
 ![Insertion d'un utilisateur](https://i.ibb.co/GCDbc4N/Screenshot-2024-03-02-183046.png)
-#### Récuperation de la liste utilisateurs
+#### Récupération  de la liste utilisateurs
 ![Récuperation de la liste utilisateurs](https://i.ibb.co/VQJRRCj/Screenshot-2024-03-02-183511.png)
-#### Récuperation de la liste des utilisateurs
-![Récuperation de la liste utilisateurs](https://i.ibb.co/VQJRRCj/Screenshot-2024-03-02-183511.png)
-#### Récuperation d'un utilisateur par ID
+#### Récupération d'un utilisateur par ID
 ![Récuperation d'un seul utilisateur](https://i.ibb.co/gRHyDH9/Screenshot-2024-03-02-184313.png)
 #### Modification d'un utilisateur par ID
 ![Modification d'un utilisateur](https://i.ibb.co/kmXxJtP/Screenshot-2024-03-02-184547.png)
@@ -1259,6 +1260,7 @@ La classe `Validation` prend trois paramètres dans son constructeur.
 3. `customMessages` : Par défaut, les messages retournés sont en anglais, mais à l'aide de ce paramètre, vous pouvez changer les messages qui seront retournés pour chaque validation échouée.
 
 Voici une liste des validations par défaut et de leurs significations: 
+
 | Validation | Exemple | Description |
 | :-------: | :-------: | :----------------------------------------------------------: |
 | required  | target: { required: true } | Précisez que la clé et la valeur à l'intérieur sont obligatoires. |
@@ -1269,11 +1271,12 @@ Voici une liste des validations par défaut et de leurs significations:
 | image  | target: { image: 1000000 } | Précisez qu'un champ doit être une image valide. 1000000 indique la taille maximale de l'image |
 | fileTypes  | target: { fileTypes: ['application/pdf', 'image/jpeg'] } | Précisez qu'un champ doit être un fichier valide entre les types préciser dans le tableau |
 | fileSize  | target: { fileSize: 1000000 } | Précisez la taille maximale d'un fichier en octet |
-| exists  | target: { exists: "table,colonne" } | Précisez que la valeur d'un champ doit existé dans la table précisé |
+| exists  | target: { exists: "table,colonne" } | Précisez que la valeur d'un champ doit exister dans la table précisé |
 | unique  | target: { exists: "table,colonne" } | Précisez que la valeur d'un champ doit être unique sur la table précisé |
 | alpha  | target: { exists: true } | Précisez que la valeur d'un champ doit contenir des caractères alphanumériques |
 | number  | target: { exists: true } | Précisez que la valeur d'un champ doit être un nombre valide |
 | date  | target: { date: "DD/MM/YYYY" } | Précisez que la valeur d'un champ doit être une date au format précisé |
+
 # Upload des fichiers
 ## Introduction
 Comme c'est le cas pour la gestion des bases de données, il n'existe pas de fonctionnalité intégrée dans Express.js pour faciliter le téléchargement de fichiers. Pour accomplir cette tâche, il est souvent nécessaire de recourir à des bibliothèques tierces.
@@ -1314,6 +1317,7 @@ module.exports = upload_routes
 
 Dans le fichier d'entrée de l'application, nous allons enregistrer un nouveau middleware pour lesroutes `/upload `afin d'accéder à la route créée dans le fichier `upload.routes.js`.
 ```js
+// server.js
 const express = require('express');
 const utilisateurs_routes = require('./routes/utilisateurs.routes');
 const app = express();
@@ -1364,7 +1368,7 @@ const uploadFicher = async (req, res) => {
 module.exports = {
      uploadFicher
 }
-`
+```
 ```js
 const fichier = req.files.fichier
 ```
@@ -1414,7 +1418,7 @@ module.exports = {
 }
 ```
 
-Maintenant, créez la classe Upload.js dans le dossier class et placez le code suivant :
+Maintenant, créez la classe `Upload.js` dans le dossier `class` et placez le code suivant :
 ```js
 const path = require('path')
 const fs = require('fs')
@@ -1648,12 +1652,14 @@ Ceci permet d'indiquer que le dossier utilisé pour les fichiers publics se trou
 Le lien de l'image enregistrée ressemble à ceci: `http://localhost:3000\uploads\images\utilisateurs\1709880286764.jpg`. Vous pouvez la visualiser en copiant cette URL dans la barre d'adresse de votre navigateur.
 
 Voici un tableau présentant et expliquant les paramètres que vous pouvez utiliser avec la fonction `upload()`:
+
 | Parametre | Type | Description |
 | :-------: | :-------: | :----------------------------------------------------------: |
 | file  | fileUpload.UploadedFile | Le fichier envoyé wt récupéré via `req.files`.  |
 | withThumb  | boolean | Par défaut, si vous uploadez une image, elle sera enregistrée avec sa miniature. Vous pouvez modifier ce comportement en passant `false` à ce paramètre.  |
 | fileDestination  | string | Par défaut, cette classe utilise le chemin défini dans `destinationPath` pour déplacer le fichier vers l'emplacement précisé. Cependant, lors de l'enregistrement direct, vous pouvez spécifier directement le chemin que vous souhaitez. |
 | enableCompressing  | string | Cela permet de spécifier si vous souhaitez compresser les images ou non. Par défaut, si vous uploadez une image, elle sera compressée à une qualité aussi légère que possible.  |
+
 # Authentification
 ## Introduction
 L'authentification dans une application fait référence au processus de vérification de l'identité d'un utilisateur ou d'une application qui tente d'accéder à des ressources protégées. Cela garantit que seules les parties autorisées peuvent effectuer certaines actions ou accéder à certaines données.
@@ -1689,8 +1695,6 @@ Une fois le token généré, il est envoyé au client, généralement inclus dan
 ## Utilisation de l'access token dans les requêtes vers l'API
 Pour accéder aux ressources protégées de l'API, le client doit inclure l'access token dans les en-têtes de ses requêtes. Ceci peut être accompli en ajoutant un en-tête d'autorisation (par exemple, Authorization: Bearer VOTRE_ACCESS_TOKEN) à chaque requête.
 Le serveur de l'API peut alors vérifier la validité du token à l'aide de la clé secrète partagée et autoriser ou refuser l'accès en conséquence.
-
-## Utilisation de l'access token dans les requêtes vers l'API
 
 ## Renouvellement de l'access token (si nécessaire) 
 Si l'access token a une durée de vie limitée et expire, le client peut demander un nouveau token en utilisant un refresh token ou en demandant à l'utilisateur de s'authentifier à nouveau.
@@ -1874,9 +1878,10 @@ Dans ce code, nous avons utilisé <a href="https://www.npmjs.com/package/bcrypt"
 
 Comme vous pouvez le remarquer, pour générer un jeton (avec la méthode `jwt.sign()`), nous avons passé un payload qui contient les données à stocker dans le jeton (`ID_UTILISATEUR` dans notre cas). Ensuite, nous avons récupéré la clé secrète pour le cryptage des jetons que nous avons placée dans le fichier `.env `avec le paramètre `JWT_PRIVATE_KEY`.
 
-> Il est strictement déconseillé de mettre des informations sensibles dans le payload, comme le mot de passe de l'utilisateur.
+> Il est strictement déconseillé de mettre des informations sensibles dans le `payload`, comme le mot de passe de l'utilisateur.
 Dans cet exemple, nous avons défini un temps d'expiration du jeton à 259200 secondes (soit 3 jours). Cela indique que le jeton ne sera plus valide après 3 jours.
-> Il est strictement deconseille de mettre un delais plus longue  pour un token d'access
+
+> Il est strictement déconseillé de mettre un delai plus longue  pour un token d'access
 
 Maintenant, si vous testez la route de création d'un utilisateur, vous remarquerez que la réponse envoyée contient également le jeton d'accès.
 
@@ -2071,7 +2076,7 @@ app.listen(port, () => {
 ## Sécuriser  une ressource
 Maintenant que nous sommes capables de déterminer si un utilisateur est connecté ou non lors de l'exécution d'une requête, il est temps de passer à la sécurisation des ressources sensibles. Pour simplifier ce processus, nous allons créer un autre middleware appelé `requireAuth` que nous utiliserons pour indiquer que la ressource nécessite une authentification pour y accéder.
 
-Créez un fichier requireAuth à l'intérieur du dossier middlewares et insérez le code suivant :
+Créez un fichier `requireAuth.js` à l'intérieur du dossier `middlewares` et insérez le code suivant :
 ```js
 // middlewares/requireAuth.js
 const requireAuth = (request, response, next) => {
@@ -2089,7 +2094,7 @@ const requireAuth = (request, response, next) => {
 
 module.exports = requireAuth;
 ```
-Ce code vérifie simplement que la clé userId, que nous avons ajoutée via `bindUser`, existe dans la requête. Si elle existe, nous passerons au middleware suivant en utilisant la fonction `next()`, sinon nous bloquerons la suite en renvoyant une réponse avec le statut 401.
+Ce code vérifie simplement que la clé `userId`, que nous avons ajoutée via `bindUser`, existe dans la requête. Si elle existe, nous passerons au middleware suivant en utilisant la fonction `next()`, sinon nous bloquerons la suite en renvoyant une réponse avec le statut 401.
 
 Maintenant que le middleware est créé, nous pourrons l'utiliser chaque fois que nous voulons sécuriser une ressource. Prenons, par exemple, le cas où nous voulons exiger une connexion pour accéder à la liste des utilisateurs. Nous pourrions le faire de la manière suivante :
 
@@ -2110,6 +2115,7 @@ module.exports = utilisateurs_routes
 
 
 Si vous accédez maintenant à la route de récupération des utilisateurs, vous recevrez une réponse indiquant que vous devez vous connecter.
+
 ## Envoyer un token d'access avec Thunder Client
 Pour envoyer un jeton d'accès avec le client Thunder, commencez d'abord par vous connecter. Une fois que vous avez obtenu le jeton d'accès, vous le transmettez en tant qu'en-tête de la requête, comme illustré dans cette image :
 ![Envoyer un token d'access avec Thunder Client](https://i.ibb.co/SRnhFvw/Screenshot-2024-03-10-092614.png)
@@ -2125,3 +2131,12 @@ Voici à quoi doit ressembler l'application :
 - Une fois connecté, il pourra visualiser les publications qu'il a publiées.
 - L'utilisateur aura également la possibilité de créer, modifier ou supprimer ses propres publications. Chaque publication aura un titre, une description, une date de publication et une image.
 - Les routes de récupération et de gestion des publications doivent être protégées, et l'utilisateur aura uniquement la possibilité de gérer ses propres publications. Il n'aura pas le droit de voir les publications des autres utilisateurs.
+
+# Conclusion
+Dans cette formation, nous avons appris à utiliser Node.js et Express.js pour créer une application de type API. Nous avons abordé les bases de Node.js, les avantages de l'utilisation du framework Express, ainsi que les bibliothèques utilitaires importantes qui facilitent la création d'une application Express.
+
+Nous avons appris à utiliser Sequelize, qui simplifie les opérations d'accès à la base de données. En utilisant cette bibliothèque, l'accès à la base de données devient plus facile par rapport à l'exécution des requêtes classiques, tout en assurant également la sécurité de l'application.
+
+Nous avons également vu comment ajouter l'authentification dans l'application avec JWT et sécuriser les ressources pour les utilisateurs authentifiés uniquement. Nous avons appris à utiliser bcrypt pour le hachage des mots de passe.
+
+Cette formation avait pour objectif de vous donner des directives et des bonnes pratiques pour créer une application Node.js et Express.js. Il est conseillé de continuer à faire des recherches pour approfondir vos connaissances sur chacune des technologies mentionnées dans ce manuel.

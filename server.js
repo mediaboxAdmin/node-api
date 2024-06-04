@@ -6,10 +6,14 @@ const upload_routes = require('./routes/upload.routes');
 const fileUpload = require("express-fileupload");
 const auth_routes = require('./routes/auth.routes');
 const bindUser = require('./middlewares/bindUser');
+const cors = require("cors");
 dotenv.config()
 
 const port = process.env.PORT;
 
+app.use(cors({
+     origin: "*"
+}));
 app.use(express.static(__dirname + "/public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
