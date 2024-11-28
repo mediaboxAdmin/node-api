@@ -1,20 +1,2 @@
-{
-   "C:\\Users\\mbaga\\Lab\\node-api\\src\\utils\\addition.ts": {
-      "path": "C:\\Users\\mbaga\\Lab\\node-api\\src\\utils\\addition.ts",
-      "statementMap": { "0": { "start": { "line": 2, "column": 3 }, "end": { "line": 2, "column": 16 } } },
-      "fnMap": {
-         "0": {
-            "name": "addition",
-            "decl": { "start": { "line": 1, "column": 24 }, "end": { "line": 1, "column": 32 } },
-            "loc": { "start": { "line": 1, "column": 55 }, "end": { "line": 3, "column": 2 } },
-            "line": 1
-         }
-      },
-      "branchMap": {},
-      "s": { "0": 2 },
-      "f": { "0": 2 },
-      "b": {},
-      "_coverageSchema": "1a1c01bbd47fc00a2c39e90264f33305004495a9",
-      "hash": "b4d9f60d90a79d52583c91711904cb9d3e54194a"
-   }
+{"C:\\Users\\mbaga\\Lab\\node-api\\src\\utils\\addition.ts": {"path":"C:\\Users\\mbaga\\Lab\\node-api\\src\\utils\\addition.ts","statementMap":{"0":{"start":{"line":2,"column":3},"end":{"line":2,"column":15}}},"fnMap":{"0":{"name":"addition","decl":{"start":{"line":1,"column":24},"end":{"line":1,"column":32}},"loc":{"start":{"line":1,"column":55},"end":{"line":3,"column":1}},"line":1}},"branchMap":{},"s":{"0":2},"f":{"0":2},"b":{},"_coverageSchema":"1a1c01bbd47fc00a2c39e90264f33305004495a9","hash":"7653fe794a43e3422a914df24b78c9927deeb90e"}
 }

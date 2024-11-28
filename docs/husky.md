@@ -34,8 +34,20 @@ Dans cet exemple, npm run lint sera exécuté à chaque fois qu'un commit est ef
 
 # Husky, prettier, eslint & jest
 
-Maintenant que nous avons compris l'utilite de husky nous pouvons le configurer de sorte que a chaque fois que quelq'un va essayer d'effectue un commit, on va lancer le lint d'abord et les tests unitaires si cela ne passe pas, le commit sera annule
+Maintenant que nous avons compris l'utilite de husky nous pouvons le configurer de sorte que a chaque fois que quelq'un va essayer d'effectuer un commit, on va lancer le lint d'abord et les tests unitaires si cela ne passe pas, le commit sera annule.
+
+Dans le fichier `pre-commit`, nous aurons ces 3 commandes
 
 ```
+npx prettier --write .
+npm run lint
+npm run test
+```
 
+Mais il y a un soucis, la commande `npx prettier --write .` va apporter des modifications et nous arouns besoin de les ajouter dans le dernier commit a la fin. dans ce cas, le contenu sera ainsi:
+```
+npx prettier --write .
+npm run lint
+npm run test
+git update-index --again
 ```
