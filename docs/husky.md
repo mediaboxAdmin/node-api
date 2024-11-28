@@ -45,6 +45,7 @@ npm run test
 ```
 
 Mais il y a un soucis, la commande `npx prettier --write .` va apporter des modifications et nous arouns besoin de les ajouter dans le dernier commit a la fin. dans ce cas, le contenu sera ainsi:
+
 ```
 npx prettier --write .
 npm run lint
