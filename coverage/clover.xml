@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1732813783724" clover="3.2.0">
-  <project timestamp="1732813783725" name="All files">
+<coverage generated="1732814699511" clover="3.2.0">
+  <project timestamp="1732814699511" name="All files">
     <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1" elements="2" coveredelements="2" complexity="0" loc="1" ncloc="1" packages="1" files="1" classes="1"/>
     <file name="addition.ts" path="C:\Users\mbaga\Lab\node-api\src\utils\addition.ts">
       <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
