@@ -1,0 +1,22 @@
+{
+	"hello": "Salama %s %s",
+	"gender": "Mutama",
+	"auth_riders.controller.getDataCompteoublier.title": "Upya Nenosiri",
+	"auth_riders.controller.getDataCompteoublier.réinitialisation": "Tumepokea ombi lako la upya wa nenosiri kwa akaunti yako.",
+	"auth_riders.controller.getDataCompteoublier.codeReinitier": "Ili kuthibitisha mchakato wako wa upya, tafadhali tumia nambari ya uthibitisho ifuatayo:",
+	"auth_riders.controller.getDataCompteoublier.processApplication": "Unaweza kuingiza nambari hii wakati wa mchakato wa upya wa nenosiri kwenye programu.",
+	"auth_riders.controller.getDataCompteoublier.inchange": "Ikiwa hukufanya ombi hili, tafadhali ignore barua pepe hii, na nenosiri lako litabaki kama lilivyo.",
+	"auth_riders.controller.getDataCompteoublier.Cordialement": "Salamu,",
+	"auth_riders.controller.getDataCompteoublier.automatique": "Wasili inapanga safari zako kwa njia ya moja kwa moja, kwa ufanisi na usahihi.",
+	"auth_riders.controller.getDataCompteoublier.conditions": "Masharti na Sheria",
+	"auth_riders.controller.getDataCompteoublier.Politiques": "Sera",
+	"auth_riders.controller.getDataCompteoublier.Visiter": "Tembelea tovuti yetu",
+	"auth_riders.controller.getDataCompteoublier.Aide": "Msaada",
+	"auth_riders.controller.registerPhone.Bienvenu": "Karibu kwenye Wasili!",
+	"auth_riders.controller.registerPhone.ravisaccueillir": "Tunafurahi kukukaribisha kwenye",
+	"auth_riders.controller.registerPhone.Mercicommunauté": "Asante kwa kujiandikisha na kuwa sehemu ya jamii yetu.",
+	"auth_riders.controller.registerPhone.validerinscription": "Ili kuthibitisha usajili wako, tafadhali tumia nambari ya uthibitisho ifuatayo:",
+	"auth_riders.controller.registerPhone.procédureconfirmation": "Unaweza kuingiza nambari hii wakati wa mchakato wa uthibitisho kwenye programu.",
+	"auth_riders.controller.registerPhone.Assurez-vous": "Hakikisha usishiriki nambari hii na watu wengine, kwani ni ya kibinafsi na ya siri.",
+	"auth_drivers.controller.checkCompteOblier.Confirmationcompte": "Thibitisha Akaunti"
+}

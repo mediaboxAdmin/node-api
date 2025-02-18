@@ -7,6 +7,10 @@ const fileUpload = require("express-fileupload");
 const auth_routes = require('./routes/auth.routes');
 const bindUser = require('./middlewares/bindUser');
 const cors = require("cors");
+const http = require("http")
+const https = require("https")
+const handleSocketEvents = require('./socket');
+const { RESEARCH_CONDUCTOR } = require('./crons/RESEARCH_CONDUCTOR');
 dotenv.config()
 
 const port = process.env.PORT;
@@ -26,6 +30,25 @@ app.use('/', utilisateurs_routes)
 app.use('/upload', upload_routes)
 app.use('/auth', auth_routes)
 
-app.listen(port, () => {
+
+const enableHttps = process.env.ENABLE_HTTPS
+var server
+if (enableHttps == 1) {
+  var options = {
+    key: fs.readFileSync("/var/www/html/api/https/privkey.pem"),
+    cert: fs.readFileSync("/var/www/html/api/https/fullchain.pem"),
+  };
+  server = https.createServer(options, app);
+} else {
+  server = http.createServer(app);
+}
+
+// sockets
+handleSocketEvents(io)
+app.io = io
+
+server.listen(port, () => {
+   // crons
+   RESEARCH_CONDUCTOR(io)
   console.log(`Serveur écoutant sur le port ${port}`);
 });
