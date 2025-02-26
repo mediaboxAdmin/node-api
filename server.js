@@ -11,6 +11,7 @@ const http = require("http")
 const https = require("https")
 const handleSocketEvents = require('./socket');
 const { RESEARCH_CONDUCTOR } = require('./crons/RESEARCH_CONDUCTOR');
+const ihmRouter = require('./routes/ihm/ihmRouter');
 dotenv.config()
 
 const port = process.env.PORT;
@@ -29,6 +30,8 @@ app.all("*", bindUser);
 app.use('/', utilisateurs_routes)
 app.use('/upload', upload_routes)
 app.use('/auth', auth_routes)
+app.use('/ihm', ihmRouter)
+app.use('/sig', auth_routes)
 
 
 const enableHttps = process.env.ENABLE_HTTPS
